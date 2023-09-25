@@ -1,2 +1,3 @@
-# controller
+# Controller
+
 UBC Sailbot's controller
