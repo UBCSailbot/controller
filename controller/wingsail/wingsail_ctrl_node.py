@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+
+"""The ROS node for the wingsail controller."""
+
+import rclpy
+import rclpy.utilities
+from rclpy.node import Node
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = WingsailControllerNode()
+    rclpy.spin(node=node)
+    node.destroy_node()
+    rclpy.shutdown()
+
+
+class WingsailControllerNode(Node):
+    """
+    Subscriptions:
+        TO BE ADDED
+    """
+
+    def __init__(self):
+        """Initializes an instance of this class."""
+        super().__init__("wingsail_ctrl_node")
+
+        self.get_logger().debug("Initializing node...")
+        self.__init_private_attributes()
+        self.__declare_ros_parameters()
+        self.__init_subscriptions()
+        self.__init_publishers()
+        self.get_logger().debug("Node initialization complete. Starting execution...")
+
+    def __init_private_attributes(self):
+        """Initializes private attributes of this class that are not initialized anywhere else
+        during the initialization process.
+        """
+        self.__trim_tab_angle = 0.0
+
+    def __declare_ros_parameters(self):
+        """Declares ROS parameters from the global configuration file that will be used in this
+        node. This node will monitor for any changes to these parameters during execution and will
+        update itself accordingly.
+        """
+        # TODO Update global YAML file with more configuration parameters and declare them here
+        self.get_logger().debug("Declaring ROS parameters...")
+        self.declare_parameters(
+            namespace="",
+            parameters=[
+                ("pub_period_sec", rclpy.Parameter.Type.DOUBLE),
+            ],
+        )
+
+        # TODO Revisit this debug statement. It might get ugly for args with complicated structures
+        all_parameters = self._parameters
+        for name, parameter in all_parameters.items():
+            value_str = str(parameter.value)
+            self.get_logger().debug(f"Got parameter {name} with value {value_str}")
+
+    def __init_subscriptions(self):
+        """Initializes the subscriptions of this node. Subscriptions pull data from other ROS
+        topics for further usage in this node. Data is pulled from subscriptions periodically via
+        callbacks, which are registered upon subscription initialization.
+        """
+        # TODO Implement this function by subscribing to topics that give the desired input data
+        # Callbacks for each subscriptions should be defined as private methods of this class
+        pass
+
+    def __init_publishers(self):
+        """Initializes the publishers of this node. Publishers update ROS topics so that other ROS
+        nodes in the system can utilize the data produced by this node.
+        """
+        # TODO Implement this function by initializing publishers for topics that give the desired
+        # output data
+        pass
+
+    @property
+    def pub_period(self) -> float:
+        return self.get_parameter("pub_period_sec").get_parameter_value().double_value
+
+    @property
+    def trim_tab_angle(self) -> float:
+        return self.__trim_tab_angle
+
+
+if __name__ == "__main__":
+    main()
