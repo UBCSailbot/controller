@@ -17,7 +17,14 @@ def main(args=None):
 
 class WingsailControllerNode(Node):
     """
+    A ROS node that controls the trim tab angle wingsail of the boat. The objective
+    of the wingsail controller is to maintain the wingsail at a desired angle of attack
+    while optimizing for speed by maximizing the lift-to-drag ratio of the wingsail.
+
     Subscriptions:
+        TO BE ADDED
+
+    Publishers:
         TO BE ADDED
     """
 
