@@ -3,7 +3,7 @@
 <package format="3">
   <name>controller</name>
   <version>0.0.0</version>
-  <description>UBC Sailbot's Boat Simulator</description>
+  <description>UBC Sailbot's Controller</description>
   <maintainer email="software@ubcsailbot.org">Devon Friend</maintainer>
   <license>MIT</license>
 

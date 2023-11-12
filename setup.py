@@ -24,7 +24,7 @@ setup(
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [
-            "wingsail_ctrl_node = controller.wingsail.wingsail_ctrl_mode:main",
+            "wingsail_ctrl_node = controller.wingsail.wingsail_ctrl_node:main",
         ],
     },
 )

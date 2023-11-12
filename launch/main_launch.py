@@ -77,7 +77,7 @@ def get_wingsail_controller_description(context: LaunchContext) -> Node:
         context (LaunchContext): The current launch context.
 
     Returns:
-        Node: The node object that launches the physics engine node.
+        Node: The node object that launches the wingsail controller node.
     """
     node_name = "wingsail_ctrl_node"
     ros_parameters = [LaunchConfiguration("config").perform(context)]
