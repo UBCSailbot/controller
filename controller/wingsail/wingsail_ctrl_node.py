@@ -72,6 +72,7 @@ class WingsailControllerNode(Node):
         """
         # TODO Implement this function by subscribing to topics that give the desired input data
         # Callbacks for each subscriptions should be defined as private methods of this class
+
         pass
 
     def __init_publishers(self):
@@ -80,6 +81,7 @@ class WingsailControllerNode(Node):
         """
         # TODO Implement this function by initializing publishers for topics that give the desired
         # output data
+
         pass
 
     @property
