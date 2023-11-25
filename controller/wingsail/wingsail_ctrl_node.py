@@ -81,9 +81,6 @@ class WingsailControllerNode(Node):
         nodes in the system can utilize the data produced by this node.
         """
 
-        # TODO Implement this function by initializing publishers for topics that give the desired
-        # output data
-
         self.get_logger().debug("Initializing publishers...")
         self.__trim_tab_angle_pub = self.create_publisher(
             msg_type=SailCmd,
