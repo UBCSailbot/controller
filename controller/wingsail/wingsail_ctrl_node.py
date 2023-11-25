@@ -4,6 +4,7 @@
 
 import rclpy
 import rclpy.utilities
+from custom_interfaces.msg import GPS, WindSensor
 from rclpy.node import Node
 
 
@@ -72,8 +73,21 @@ class WingsailControllerNode(Node):
         """
         # TODO Implement this function by subscribing to topics that give the desired input data
         # Callbacks for each subscriptions should be defined as private methods of this class
+        self.get_logger().debug("Initializing subscriptions...")
 
-        pass
+        self.__filtered_wind_sensors_sub = self.create_subscription(
+            msg_type=WindSensor,
+            topic="filtered_wind_sensor",
+            callback=self.__wind_sensors_sub_callback,
+            qos_profile=1,
+        )
+
+        self.__gps_sub = self.create_subscription(
+            msg_type=GPS,
+            topic="mock_gps",
+            callback=self.__gps_sub_callback,
+            qos_profile=1,
+        )
 
     def __init_publishers(self):
         """Initializes the publishers of this node. Publishers update ROS topics so that other ROS
@@ -91,6 +105,26 @@ class WingsailControllerNode(Node):
     @property
     def trim_tab_angle(self) -> float:
         return self.__trim_tab_angle
+
+    # @property
+    # def filtered_wind_sensors_sub(self) -> Subscription:
+    #     return self.__filtered_wind_sensors_sub
+
+    # @property
+    # def gps_sub(self) -> Subscription:
+    #     return self.__gps_sub
+
+    def __wind_sensors_sub_callback(self, msg):
+        self.filtered_wind_sensors = msg
+        self.get_logger().info(f"Received data from {self.__filtered_wind_sensors_sub.topic}")
+        self.get_logger().info(f"Man IDK the format of this: {self.filtered_wind_sensors}")
+
+    def __gps_sub_callback(self, msg):
+        self.gps = msg
+        self.get_logger().info(f"Received data from {self.__gps_sub.topic}")
+        self.get_logger().info(
+            f"Also do not know the format of this: {self.filtered_wind_sensors}"
+        )
 
 
 if __name__ == "__main__":
