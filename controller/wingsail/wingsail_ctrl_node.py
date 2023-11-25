@@ -4,6 +4,7 @@
 
 import rclpy
 import rclpy.utilities
+from custom_interfaces.msg import SailCmd
 from rclpy.node import Node
 
 
@@ -38,6 +39,7 @@ class WingsailControllerNode(Node):
         self.__init_subscriptions()
         self.__init_publishers()
         self.get_logger().debug("Node initialization complete. Starting execution...")
+        self.__init_timer_callbacks()
 
     def __init_private_attributes(self):
         """Initializes private attributes of this class that are not initialized anywhere else
@@ -78,9 +80,32 @@ class WingsailControllerNode(Node):
         """Initializes the publishers of this node. Publishers update ROS topics so that other ROS
         nodes in the system can utilize the data produced by this node.
         """
+
         # TODO Implement this function by initializing publishers for topics that give the desired
         # output data
-        pass
+
+        self.get_logger().debug("Initializing publishers...")
+        self.__trim_tab_angle_pub = self.create_publisher(
+            msg_type=SailCmd,
+            topic="sail_cmd",
+            qos_profile=1,
+        )
+
+    def __init_timer_callbacks(self):
+        self.get_logger().debug("Initializing timer callbacks...")
+
+        # Publishing data to ROS topics
+        self.create_timer(
+            timer_period_sec=self.pub_period,
+            callback=self.__publish,
+        )
+
+    # PUBLISHER CALLBACKS
+    def __publish(self):
+        sailcmd = SailCmd()
+        sailcmd.trim_tab_angle_degrees = -15.5
+        self.__trim_tab_angle_pub.publish(sailcmd)
+        self.get_logger().info(f"Published to {self.__trim_tab_angle_pub.topic}")
 
     @property
     def pub_period(self) -> float:
