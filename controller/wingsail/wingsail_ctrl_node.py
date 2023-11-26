@@ -23,8 +23,8 @@ class WingsailControllerNode(Node):
     while optimizing for speed by maximizing the lift-to-drag ratio of the wingsail.
 
     Subscriptions:
-        __filtered_wind_sensors_sub (Subscription): Subscribes to a `WindSensor` message.
-        __gps_sub (Subscription): Subscribes to a 'GPS' message.
+        __filtered_wind_sensors_sub (Subscription): Subscribes to the filtered_wind_sensor topic
+        __gps_sub (Subscription): Subscribes to the gps topic
 
     Publishers:
         TO BE ADDED
@@ -46,8 +46,8 @@ class WingsailControllerNode(Node):
         during the initialization process.
         """
         self.__trim_tab_angle = 0.0
-        self.filtered_wind_sensor = None
-        self.gps = None
+        self.__filtered_wind_sensor = None
+        self.__gps = None
 
     def __declare_ros_parameters(self):
         """Declares ROS parameters from the global configuration file that will be used in this
@@ -109,12 +109,22 @@ class WingsailControllerNode(Node):
     def trim_tab_angle(self) -> float:
         return self.__trim_tab_angle
 
-    def __filtered_wind_sensor_sub_callback(self, msg):
-        self.filtered_wind_sensor = msg
+    def __filtered_wind_sensor_sub_callback(self, msg: WindSensor) -> None:
+        """Stores the latest filtered wind sensor data
+
+        Args:
+            msg (WindSensor): Filtered wind sensor data from CanTrxRosIntf.
+        """
+        self.__filtered_wind_sensor = msg
         self.get_logger().info(f"Received data from {self.__filtered_wind_sensor_sub.topic}")
 
-    def __gps_sub_callback(self, msg):
-        self.gps = msg
+    def __gps_sub_callback(self, msg: GPS) -> None:
+        """Stores the latest gps data
+
+        Args:
+            msg (GPS): gps data from CanTrxRosIntf.
+        """
+        self.__gps = msg
         self.get_logger().info(f"Received data from {self.__gps_sub.topic}")
 
 
