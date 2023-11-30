@@ -38,8 +38,8 @@ class WingsailControllerNode(Node):
         self.__declare_ros_parameters()
         self.__init_subscriptions()
         self.__init_publishers()
-        self.get_logger().debug("Node initialization complete. Starting execution...")
         self.__init_timer_callbacks()
+        self.get_logger().debug("Node initialization complete. Starting execution...")
 
     def __init_private_attributes(self):
         """Initializes private attributes of this class that are not initialized anywhere else
@@ -84,11 +84,17 @@ class WingsailControllerNode(Node):
         self.get_logger().debug("Initializing publishers...")
         self.__trim_tab_angle_pub = self.create_publisher(
             msg_type=SailCmd,
+
+            # TODO change "topic" from a magic string to a constant similar to how its done in the
+            # boat simulator
             topic="sail_cmd",
             qos_profile=1,
         )
 
     def __init_timer_callbacks(self):
+        """Initializes the timer callbacks of this node. Timer callbacks are registered to be
+        called at the specified frequency."""
+
         self.get_logger().debug("Initializing timer callbacks...")
 
         # Publishing data to ROS topics
@@ -99,9 +105,12 @@ class WingsailControllerNode(Node):
 
     # PUBLISHER CALLBACKS
     def __publish(self):
-        sailcmd = SailCmd()
-        sailcmd.trim_tab_angle_degrees = -15.5
-        self.__trim_tab_angle_pub.publish(sailcmd)
+        """Publishes a SailCmd message with the trim tab angle using the designated publisher.
+        It also logs information about the publication to the logger."""
+
+        msg = SailCmd()
+        msg.trim_tab_angle_degrees = 0
+        self.__trim_tab_angle_pub.publish(msg)
         self.get_logger().info(f"Published to {self.__trim_tab_angle_pub.topic}")
 
     @property
