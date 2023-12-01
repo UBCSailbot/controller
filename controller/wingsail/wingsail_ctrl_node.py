@@ -4,7 +4,7 @@
 
 import rclpy
 import rclpy.utilities
-from custom_interfaces.msg import GPS, WindSensor
+from custom_interfaces.msg import GPS, SailCmd, WindSensor
 from rclpy.node import Node
 
 
@@ -39,6 +39,7 @@ class WingsailControllerNode(Node):
         self.__declare_ros_parameters()
         self.__init_subscriptions()
         self.__init_publishers()
+        self.__init_timer_callbacks()
         self.get_logger().debug("Node initialization complete. Starting execution...")
 
     def __init_private_attributes(self):
@@ -96,10 +97,37 @@ class WingsailControllerNode(Node):
         """Initializes the publishers of this node. Publishers update ROS topics so that other ROS
         nodes in the system can utilize the data produced by this node.
         """
-        # TODO Implement this function by initializing publishers for topics that give the desired
-        # output data
 
-        pass
+        self.get_logger().debug("Initializing publishers...")
+        self.__trim_tab_angle_pub = self.create_publisher(
+            msg_type=SailCmd,
+            # TODO change "topic" from a magic string to a constant similar to how its done in the
+            # boat simulator
+            topic="sail_cmd",
+            qos_profile=1,
+        )
+
+    def __init_timer_callbacks(self):
+        """Initializes the timer callbacks of this node. Timer callbacks are registered to be
+        called at the specified frequency."""
+
+        self.get_logger().debug("Initializing timer callbacks...")
+
+        # Publishing data to ROS topics
+        self.create_timer(
+            timer_period_sec=self.pub_period,
+            callback=self.__publish,
+        )
+
+    # PUBLISHER CALLBACKS
+    def __publish(self):
+        """Publishes a SailCmd message with the trim tab angle using the designated publisher.
+        It also logs information about the publication to the logger."""
+
+        msg = SailCmd()
+        msg.trim_tab_angle_degrees = 0
+        self.__trim_tab_angle_pub.publish(msg)
+        self.get_logger().info(f"Published to {self.__trim_tab_angle_pub.topic}")
 
     @property
     def pub_period(self) -> float:
