@@ -4,6 +4,7 @@
 
 import rclpy
 import rclpy.utilities
+from custom_interfaces.msg import GPS, WindSensor
 from rclpy.node import Node
 
 
@@ -22,7 +23,8 @@ class WingsailControllerNode(Node):
     while optimizing for speed by maximizing the lift-to-drag ratio of the wingsail.
 
     Subscriptions:
-        TO BE ADDED
+        __filtered_wind_sensors_sub (Subscription): Subscribes to the filtered_wind_sensor topic
+        __gps_sub (Subscription): Subscribes to the gps topic
 
     Publishers:
         TO BE ADDED
@@ -44,6 +46,8 @@ class WingsailControllerNode(Node):
         during the initialization process.
         """
         self.__trim_tab_angle = 0.0
+        self.__filtered_wind_sensor = None
+        self.__gps = None
 
     def __declare_ros_parameters(self):
         """Declares ROS parameters from the global configuration file that will be used in this
@@ -72,7 +76,21 @@ class WingsailControllerNode(Node):
         """
         # TODO Implement this function by subscribing to topics that give the desired input data
         # Callbacks for each subscriptions should be defined as private methods of this class
-        pass
+        self.get_logger().debug("Initializing subscriptions...")
+
+        self.__filtered_wind_sensor_sub = self.create_subscription(
+            msg_type=WindSensor,
+            topic="filtered_wind_sensor",
+            callback=self.__filtered_wind_sensor_sub_callback,
+            qos_profile=1,
+        )
+
+        self.__gps_sub = self.create_subscription(
+            msg_type=GPS,
+            topic="gps",
+            callback=self.__gps_sub_callback,
+            qos_profile=1,
+        )
 
     def __init_publishers(self):
         """Initializes the publishers of this node. Publishers update ROS topics so that other ROS
@@ -80,6 +98,7 @@ class WingsailControllerNode(Node):
         """
         # TODO Implement this function by initializing publishers for topics that give the desired
         # output data
+
         pass
 
     @property
@@ -89,6 +108,24 @@ class WingsailControllerNode(Node):
     @property
     def trim_tab_angle(self) -> float:
         return self.__trim_tab_angle
+
+    def __filtered_wind_sensor_sub_callback(self, msg: WindSensor) -> None:
+        """Stores the latest filtered wind sensor data
+
+        Args:
+            msg (WindSensor): Filtered wind sensor data from CanTrxRosIntf.
+        """
+        self.__filtered_wind_sensor = msg
+        self.get_logger().info(f"Received data from {self.__filtered_wind_sensor_sub.topic}")
+
+    def __gps_sub_callback(self, msg: GPS) -> None:
+        """Stores the latest gps data
+
+        Args:
+            msg (GPS): gps data from CanTrxRosIntf.
+        """
+        self.__gps = msg
+        self.get_logger().info(f"Received data from {self.__gps_sub.topic}")
 
 
 if __name__ == "__main__":
