@@ -55,7 +55,6 @@ class WingsailControllerNode(Node):
         node. This node will monitor for any changes to these parameters during execution and will
         update itself accordingly.
         """
-        # TODO Update global YAML file with more configuration parameters and declare them here
         self.get_logger().debug("Declaring ROS parameters...")
         self.declare_parameters(
             namespace="",
