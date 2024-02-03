@@ -60,8 +60,8 @@ class WingsailControllerNode(Node):
             namespace="",
             parameters=[
                 ("pub_period_sec", rclpy.Parameter.Type.DOUBLE),
-                ("reynolds_number", rclpy.Parameter.Type.DOUBLE),
-                ("angle_of_attack", rclpy.Parameter.Type.DOUBLE),
+                ("reynolds_number", rclpy.Parameter.Type.DOUBLE_ARRAY),
+                ("angle_of_attack", rclpy.Parameter.Type.DOUBLE_ARRAY),
             ],
         )
 
