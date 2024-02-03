@@ -126,7 +126,7 @@ class WingsailControllerNode(Node):
         It also logs information about the publication to the logger."""
 
         msg = SailCmd()
-        msg.trim_tab_angle_degrees = 0
+        msg.trim_tab_angle_degrees = 0.0
         self.__trim_tab_angle_pub.publish(msg)
         self.get_logger().info(f"Published to {self.__trim_tab_angle_pub.topic}")
 
