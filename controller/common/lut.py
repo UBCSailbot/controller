@@ -34,7 +34,7 @@ class LUT:
         else:
             self.__table = np.array(lookup_table)
 
-        self.verifyTable(self.__table)
+        self.__verifyTable(self.__table)
         self.x = self.__table[:, 0]
         self.y = self.__table[:, 1]
 
@@ -68,7 +68,7 @@ class LUT:
         cs = interpolate.CubicSpline(self.x, self.y)
         return cs(x)
 
-    def verifyTable(self, table: np.ndarray) -> None:
+    def __verifyTable(self, table: np.ndarray) -> None:
         if len(table.shape) == 2:
             if table.shape[1] == 2:
                 return
