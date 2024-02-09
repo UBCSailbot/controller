@@ -1,7 +1,10 @@
-from typing import List, Union
+from typing import List
 
 import numpy as np
+from numpy.typing import NDArray
 from scipy import interpolate
+
+from controller.common.types import Scalar
 
 
 class LUT:
@@ -15,38 +18,41 @@ class LUT:
 
     def __init__(
         self,
-        lookup_table: Union[List[List[int | float]], np.ndarray],
+        lookup_table: List[List[Scalar]] | NDArray,
         interpolation_method: str = "linear",
     ):
         """
         Initializes the LUT object.
 
         Args:
-            lookup_table (list): A list of tuples or lists containing x-y data points for
-            interpolation. Format is [[x1,y1], [x2,y2], ..., [xn,yn]]
+            lookup_table (List[List[Scalar]]|NDArray): A list of lists or NDArray containing x-y
+            data points for interpolation. Shape should be (n, 2)
             interpolation_method (str): Interpolation method to use. Default is "linear".
 
         Raises:
-            ValueError: If the specified interpolation method is unknown.
+            ValueError: If the specified interpolation method is unknown
+            or if the table shape is incorrect.
         """
-        if type(lookup_table) is np.ndarray:
-            self.__table = lookup_table
+        if isinstance(lookup_table, np.ndarray):
+            table = lookup_table
         else:
-            self.__table = np.array(lookup_table)
+            table = np.array(lookup_table)
 
-        self.__verifyTable(self.__table)
-        self.x = self.__table[:, 0]
-        self.y = self.__table[:, 1]
+        self.__verifyTable(table)
+        self.x = table[:, 0]
+        self.y = table[:, 1]
 
-        self.__interpolation = interpolation_method
+        self.__interpolation_method = interpolation_method
 
-        match self.__interpolation:
+        match self.__interpolation_method:
             case "linear":
-                self.__method = self.__linearInterpolation
+                self.__interpolation_function = self.__linearInterpolation
             case "spline":
-                self.__method = self.__splineInterpolation
+                self.__interpolation_function = self.__splineInterpolation
             case _:
-                raise ValueError(self.__interpolation + " is an unknown interpolation method!")
+                raise ValueError(
+                    self.__interpolation_method + " is an unknown interpolation method!"
+                )
 
     def __call__(self, x: float) -> float:
         """
@@ -59,20 +65,15 @@ class LUT:
             float: The interpolated value using the interpolation method defined when LUT instance
             creation.
         """
-        return self.__method(x)
+        return self.__interpolation_function(x)
 
-    def __linearInterpolation(self, x: float) -> float:
+    def __linearInterpolation(self, x: Scalar) -> float:
         return np.interp(x, self.x, self.y)
 
-    def __splineInterpolation(self, x: float) -> float:
+    def __splineInterpolation(self, x: Scalar) -> float:
         cs = interpolate.CubicSpline(self.x, self.y)
         return cs(x)
 
-    def __verifyTable(self, table: np.ndarray) -> None:
-        if len(table.shape) == 2:
-            if table.shape[1] == 2:
-                return
-            else:
-                raise ValueError("Input table is invalid shape.")
-        else:
-            raise ValueError("Input table is invalid shape.")
+    def __verifyTable(self, table: NDArray) -> None:
+        if (len(table.shape) != 2) or table.shape[1] != 2:
+            raise ValueError(f"Input table has shape {table.shape}, but expected shape of (n, 2)")
