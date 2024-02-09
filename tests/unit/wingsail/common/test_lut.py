@@ -10,31 +10,46 @@ from controller.common.lut import LUT
 class TestLUT:
     # Intialize lookup table
     look_up_table = [[50000, 5.75], [100000, 6.75], [200000, 7], [500000, 9.75], [1000000, 10]]
+    look_up_np_array = np.array(look_up_table)
 
     def test_LUT_constructor(self):
         # set up
         testLUT = LUT(self.look_up_table)
-
+        testLUT2 = LUT(self.look_up_np_array)
         # test that LUT return a known value
         assert math.isclose(testLUT(50000), 5.75)
+        assert math.isclose(testLUT2(50000), 5.75)
 
     def test_unknown_interpolation_exception(self):
         with pytest.raises(ValueError):
             testLUT = LUT(self.look_up_table, "gabagool")
 
-    def test_invalid_table_exception(self):
-        invalid_table1 = [[10000, 10000, 10000], [1, 1, 1]]
-        invalid_table2 = [10000, 10000, 10000]
-        invalid_table3 = [[0, 1], 10000, 10000]
-
+    @pytest.mark.parametrize(
+        "invalid_table",
+        [
+            [[10000, 10000, 10000], [1, 1, 1]],
+            [10000, 10000, 10000],
+            [[0, 1], 10000, 10000],
+            np.array([[10000, 10000, 10000], [1, 1, 1]]),
+            np.array([10000, 10000, 10000]),
+            np.array([[[0, 1]], [[0, 1]], [[0, 1]]]),
+        ],
+    )
+    def test_invalid_table_exception(self, invalid_table):
         with pytest.raises(ValueError):
-            testLUT = LUT(invalid_table1)
+            testLUT = LUT(invalid_table)
 
+    @pytest.mark.parametrize(
+        "invalid_table",
+        [
+            np.array([[10000, 10000, 10000], [1, 1, 1]]),
+            np.array([10000, 10000, 10000]),
+            np.array([[[0, 1]], [[0, 1]], [[0, 1]]]),
+        ],
+    )
+    def test_invalid_numpy_array_exception(self, invalid_table):
         with pytest.raises(ValueError):
-            testLUT = LUT(invalid_table2)
-
-        with pytest.raises(ValueError):
-            testLUT = LUT(invalid_table3)
+            testLUT = LUT(invalid_table)
 
     @pytest.mark.parametrize("linear_test_values", list(range(50000, 1100000, 10000)))
     def test_linear_interpolation(self, linear_test_values):
@@ -47,11 +62,11 @@ class TestLUT:
             testLUT(linear_test_values), np.interp(linear_test_values, table[:, 0], table[:, 1])
         )
 
-    def test_linear_extrapolation(self):
+    @pytest.mark.parametrize("test_value, expected_value", [(1000, 5.75), (2000000, 10)])
+    def test_linear_extrapolation(self, test_value, expected_value):
         testLUT = LUT(self.look_up_table)
         # Test that linear interpolation does not extrapolate
-        assert math.isclose(testLUT(10000), 5.75)
-        assert math.isclose(testLUT(2000000), 10)
+        assert math.isclose(testLUT(test_value), expected_value)
 
     @pytest.mark.parametrize("spline_test_values", list(range(10000, 2100000, 10000)))
     def test_spline_interpolation_extrapolation(self, spline_test_values):
