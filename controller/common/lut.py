@@ -25,7 +25,7 @@ class LUT:
         Initializes the LUT object.
 
         Args:
-            lookup_table (List[List[Scalar]]|NDArray): A list of lists or NDArray containing x-y
+            lookup_table (List[List[Scalar]] or NDArray): A list of lists or NDArray containing x-y
             data points for interpolation. Shape should be (n, 2)
             interpolation_method (str): Interpolation method to use. Default is "linear".
 
