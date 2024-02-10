@@ -23,6 +23,7 @@ class TestLUT:
     def test_unknown_interpolation_exception(self):
         with pytest.raises(ValueError):
             testLUT = LUT(self.look_up_table, "gabagool")
+            assert math.isclose(testLUT(50000), 5.75)
 
     @pytest.mark.parametrize(
         "invalid_table",
@@ -38,6 +39,7 @@ class TestLUT:
     def test_invalid_table_exception(self, invalid_table):
         with pytest.raises(ValueError):
             testLUT = LUT(invalid_table)
+            assert math.isclose(testLUT(50000), 5.75)
 
     @pytest.mark.parametrize(
         "invalid_table",
@@ -50,6 +52,7 @@ class TestLUT:
     def test_invalid_numpy_array_exception(self, invalid_table):
         with pytest.raises(ValueError):
             testLUT = LUT(invalid_table)
+            assert math.isclose(testLUT(50000), 5.75)
 
     @pytest.mark.parametrize("linear_test_values", list(range(50000, 1100000, 10000)))
     def test_linear_interpolation(self, linear_test_values):
@@ -67,6 +70,13 @@ class TestLUT:
         testLUT = LUT(self.look_up_table)
         # Test that linear interpolation does not extrapolate
         assert math.isclose(testLUT(test_value), expected_value)
+
+    @pytest.mark.parametrize("test_value", [[100, 200, 300]])
+    def test_linear_interpolation_exception(self, test_value):
+        testLUT = LUT(self.look_up_table)
+        # Test that linear interpolation does not extrapolate
+        with pytest.raises(ValueError):
+            testLUT(test_value)
 
     @pytest.mark.parametrize("spline_test_values", list(range(10000, 2100000, 10000)))
     def test_spline_interpolation_extrapolation(self, spline_test_values):

@@ -68,7 +68,12 @@ class LUT:
         return self.__interpolation_function(x)
 
     def __linearInterpolation(self, x: Scalar) -> float:
-        return np.interp(x, self.x, self.y)
+        output = np.interp(x, self.x, self.y)
+        if isinstance(output, np.ndarray):
+            raise ValueError(
+                "linear interpolation returned a NDArray when it should have returned a float"
+            )
+        return output
 
     def __splineInterpolation(self, x: Scalar) -> float:
         cs = interpolate.CubicSpline(self.x, self.y)
