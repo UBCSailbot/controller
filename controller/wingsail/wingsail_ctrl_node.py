@@ -55,12 +55,13 @@ class WingsailControllerNode(Node):
         node. This node will monitor for any changes to these parameters during execution and will
         update itself accordingly.
         """
-        # TODO Update global YAML file with more configuration parameters and declare them here
         self.get_logger().debug("Declaring ROS parameters...")
         self.declare_parameters(
             namespace="",
             parameters=[
                 ("pub_period_sec", rclpy.Parameter.Type.DOUBLE),
+                ("reynolds_number", rclpy.Parameter.Type.DOUBLE_ARRAY),
+                ("angle_of_attack", rclpy.Parameter.Type.DOUBLE_ARRAY),
             ],
         )
 
