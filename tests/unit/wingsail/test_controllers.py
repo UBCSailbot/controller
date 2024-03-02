@@ -5,7 +5,8 @@ from controller.common.lut import LUT
 from controller.wingsail.controllers import WingsailController
 
 # Define test data
-test_lut_data = np.array([[50000, 5.75], [100000, 6.75], [200000, 7], [500000, 9.25], [1000000, 10]])
+test_lut_data = np.array([[50000, 5.75], [100000, 6.75], [200000, 7], [500000, 9.25], [1000000, 10]
+                          ])
 test_lut = LUT(test_lut_data)
 test_chord_width = 0.14
 test_kinematic_viscosity = 0.000014207
