@@ -73,7 +73,7 @@ class WingsailController:
         - trim_tab_angle (float): The computed trim tab angle.
         """
         reynolds_number: float = self._compute_reynolds_number(apparent_wind_speed)
-        desired_alpha: float = self._compute_angle_of_attack(reynolds_number, self.lut.get_table())
+        desired_alpha: float = self._compute_angle_of_attack(reynolds_number, self.lut)
         trim_tab_angle: float = self._compute_trim_tab_angle(
             desired_alpha, apparent_wind_direction
         )
