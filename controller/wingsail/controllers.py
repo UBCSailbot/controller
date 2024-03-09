@@ -1,12 +1,23 @@
 import math
 
+from controller.common.constants import CHORD_WIDTH_MAIN_SAIL, KINEMATIC_VISCOSITY
 from controller.common.lut import LUT
 
 
 class WingsailController:
+    """
+    The controller class for computing trim tab angles for controlling the mainsail.
+
+    Args:
+    - chord_width_main_sail (float): The chord width of the main sail.
+    - kinematic_viscosity (float): The kinematic viscosity of the fluid.
+    - lut (LUT): A lookup table containing Reynolds numbers and corresponding desired angles of
+      attack.
+    """
+
     def __init__(self, chord_width_main_sail: float, kinematic_viscosity: float, lut: LUT) -> None:
-        self.chord_width_main_sail = chord_width_main_sail
-        self.kinematic_viscosity = kinematic_viscosity
+        self.chord_width_main_sail = CHORD_WIDTH_MAIN_SAIL
+        self.kinematic_viscosity = KINEMATIC_VISCOSITY
         self.lut: LUT = lut
 
     def _compute_reynolds_number(self, apparent_wind_speed: float) -> float:
@@ -24,37 +35,24 @@ class WingsailController:
         ) / self.kinematic_viscosity
         return reynolds_number
 
-    def _compute_angle_of_attack(self, reynolds_number: float, look_up_table: LUT) -> float:
+    def _compute_trim_tab_angle(
+        self, reynolds_number: float, apparent_wind_direction: float
+    ) -> float:
         """
-        Computes the desired angle of attack based on Reynolds number and a lookup table.
+        Computes the trim tab angle based on Reynolds number and apparent wind direction.
 
         Args:
         - reynolds_number (float): The Reynolds number.
-        - look_up_table: A 2D numpy array containing Reynolds numbers in the first column
-          and corresponding desired angles of attack in the second column.
-
-        Returns:
-        - desired_alpha (float): The computed desired angle of attack based on the provided
-          Reynolds number and lookup table.
-        """
-        desired_alpha: float = self.lut(reynolds_number)  # Using __call__ method
-        return desired_alpha
-
-    def _compute_trim_tab_angle(
-        self, desired_alpha: float, apparent_wind_direction: float
-    ) -> float:
-        """
+        - apparent_wind_direction (float): The absolute bearing (true heading) of the wind.
+        Degrees, 0° means the apparent wind is blowing from the bow to the stern of the boat,
+        increase CW
         Range: -180 < direction <= 180 for symmetry
 
-        Args:
-        - desired_alpha (float): The desired angle of attack.
-        - apparent_wind_direction (float): The apparent wind direction in degrees.
-
         Returns:
-        - trim_tab_angle (float): The computed trim tab angle based on the provided desired angle
-          of attack, apparent wind direction, and boat direction.
-
+        - trim_tab_angle (float): The computed trim tab angle based on the provided
+        Reynolds number and apparent wind direction.
         """
+        desired_alpha: float = self.lut(reynolds_number)  # Using __call__ method
         return math.copysign(desired_alpha, apparent_wind_direction)
 
     def get_trim_tab_angle(
@@ -73,9 +71,7 @@ class WingsailController:
         - trim_tab_angle (float): The computed trim tab angle.
         """
         reynolds_number: float = self._compute_reynolds_number(apparent_wind_speed)
-        desired_alpha: float = self._compute_angle_of_attack(reynolds_number, self.lut)
         trim_tab_angle: float = self._compute_trim_tab_angle(
-            desired_alpha, apparent_wind_direction
+            reynolds_number, apparent_wind_direction
         )
-
         return trim_tab_angle
