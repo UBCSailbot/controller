@@ -1,6 +1,5 @@
 import math
 
-from controller.common.constants import CHORD_WIDTH_MAIN_SAIL, KINEMATIC_VISCOSITY
 from controller.common.lut import LUT
 
 
@@ -15,9 +14,9 @@ class WingsailController:
       attack.
     """
 
-    def __init__(self, chord_width_main_sail: float, kinematic_viscosity: float, lut: LUT) -> None:
-        self.chord_width_main_sail = CHORD_WIDTH_MAIN_SAIL
-        self.kinematic_viscosity = KINEMATIC_VISCOSITY
+    def __init__(self, chord_width_main_sail: float, kinematic_viscosity: float, lut: LUT):
+        self.chord_width_main_sail = chord_width_main_sail
+        self.kinematic_viscosity = kinematic_viscosity
         self.lut: LUT = lut
 
     def _compute_reynolds_number(self, apparent_wind_speed: float) -> float:
